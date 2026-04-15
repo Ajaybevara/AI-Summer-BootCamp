@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Bootcamp Registration</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  background: black;
+  color: white;
+  overflow: hidden;
+}
+
+canvas {
+  position: fixed;
+  z-index: -1;
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  padding: 10px;
+}
+
+.form-box {
+  background: rgba(255,255,255,0.08);
+  padding: 25px;
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  width: 95%;
+  max-width: 420px;
+  box-shadow: 0 0 40px rgba(0,0,0,0.7);
+  max-height: 95vh;
+  overflow-y: auto;
+}
+
+h2 {
+  text-align: center;
+  color: gold;
+}
+
+input, select {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border-radius: 30px;
+  border: none;
+  background: gold;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.3s;
+}
+
+button:hover {
+  transform: scale(1.05);
+}
+
+#qrBox {
+  display: none;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.notice {
+  font-size: 12px;
+  color: #ffcc00;
+}
+
+#supportBtn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 55px;
+  height: 55px;
+  background: #25D366;
+  color: white;
+  font-size: 26px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  text-decoration: none;
+  box-shadow: 0 0 15px rgba(0,0,0,0.4);
+  z-index: 9999;
+  transition: 0.3s;
+}
+
+#supportBtn:hover {
+  transform: scale(1.1);
+}
+
+</style>
+</head>
+
+<body>
+
+  <a href="https://wa.me/919704761116?text=sir%20i%20need%20your%20help"
+   target="_blank"
+   id="supportBtn">
+   💬
+</a>
+
+<div class="container">
+<div class="form-box">
+
+<h2>🚀 AI Bootcamp</h2>
+
+<input id="name" placeholder="Full Name">
+<input id="age" placeholder="Age">
+
+<select id="gender">
+<option>Male</option>
+<option>Female</option>
+<option>Other</option>
+</select>
+
+<input id="education" placeholder="Education">
+<input id="phone" placeholder="Phone">
+<input id="email" placeholder="Email">
+
+<h3>💳 Payment ₹999/-</h3>
+
+<button onclick="handlePayment()">📲 Pay Now</button>
+
+<div id="qrBox">
+  <p>Scan & Pay ₹999/-</p>
+  <img src="qr.png" width="160">
+</div>
+
+<input id="utr" placeholder="UTR / Transaction ID">
+<input type="file" id="screenshot">
+
+<button id="submitBtn" onclick="submitForm()">✅ Submit</button>
+
+<p class="notice">⚠ Complete payment → UTR → Screenshot required</p>
+
+</div>
+</div>
+
+<script>
+
+/* PAYMENT FLAG */
+let paymentDone = false;
+
+/* QR ONLY PAYMENT */
+function handlePayment(){
+paymentDone = true;
+document.getElementById("qrBox").style.display = "block";
+}
+
+/* FAST SUBMISSION */
+function submitForm(){
+
+let btn = document.getElementById("submitBtn");
+btn.disabled = true;
+btn.innerText = "Submitting...";
+
+let file = document.getElementById("screenshot").files[0];
+
+if(!paymentDone){
+alert("Please complete payment first");
+btn.disabled = false;
+btn.innerText = "Submit";
+return;
+}
+
+if(document.getElementById("utr").value === ""){
+alert("Enter UTR");
+btn.disabled = false;
+btn.innerText = "Submit";
+return;
+}
+
+if(!file){
+alert("Upload screenshot");
+btn.disabled = false;
+btn.innerText = "Submit";
+return;
+}
+
+let reader = new FileReader();
+
+reader.onload = function(){
+
+let base64 = reader.result.split(",")[1];
+
+fetch("https://script.google.com/macros/s/AKfycbxTrdXsbrYagcfnzEtN3K__yCZKuASaht5SZ2GTH3J1BoKpxhzAJZEjeR39ANbLqhkUvQ/exec", {
+method: "POST",
+body: JSON.stringify({
+name: document.getElementById("name").value,
+age: document.getElementById("age").value,
+gender: document.getElementById("gender").value,
+education: document.getElementById("education").value,
+phone: document.getElementById("phone").value,
+email: document.getElementById("email").value,
+utr: document.getElementById("utr").value,
+screenshot: base64
+})
+});
+
+/* INSTANT UI RESPONSE */
+btn.innerText = "Submitted ✔";
+btn.style.background = "green";
+
+/* REDIRECT */
+setTimeout(() => {
+window.location.href = "success.html";
+}, 800);
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+</script>
+
+</body>
+</html>
